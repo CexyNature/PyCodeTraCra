@@ -12,7 +12,7 @@ pts = pts.reshape((-1, 1, 2))
 
 # Creating mask
 mask = np.zeros(prev.shape, dtype=np.uint8)
-roi_corners = np.array([[(0, 510), (0, 720), (1280, 720), (1280, 0), (710, 0)]], dtype=np.int32)
+roi_corners = np.array([[(300, 360), (300, 600), (910, 600), (910, 100), (510,100), (300, 360)]], dtype=np.int32)
 # fill the ROI so it doesn't get wiped out when the mask is applied
 channel_count = prev.shape[2]
 ignore_mask_color = (255,) * channel_count
@@ -28,7 +28,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 PrevCen = np.array([10, 10])
 
 # Creating second kernel for dilation
-kernel1 = np.ones((2, 2), np.uint8)
+kernel1 = np.ones((4, 4), np.uint8)
 
 while True:
     _, next = cap.read()
@@ -65,46 +65,66 @@ while True:
 
     opening = cv2.morphologyEx(rang, cv2.MORPH_OPEN, kernel)
     opening_rz = cv2.resize(opening, (960, 540))
-    cv2.imshow('opening_rz', opening_rz)
+    # cv2.imshow('opening_rz', opening_rz)
 
     closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel)
     closing_rz = cv2.resize(closing, (960, 540))
-    cv2.imshow('closing_rz', closing_rz)
+    # cv2.imshow('closing_rz', closing_rz)
 
     dilation = cv2.dilate(closing, kernel1, iterations=5)
     dilation_rz = cv2.resize(dilation, (960, 540))
-    cv2.imshow('dilation_rz', dilation_rz)
+    # cv2.imshow('dilation_rz', dilation_rz)
 
-    res = cv2.bitwise_and(masked_image, masked_image, mask=dilation)
-    res_rz = cv2.resize(res, (960, 540))
-    cv2.imshow("res_rz", res_rz)
+    # res = cv2.bitwise_and(masked_image, masked_image, mask=dilation)
+    # res_rz = cv2.resize(res, (960, 540))
+    # cv2.imshow("res_rz", res_rz)
+    #
+    # res1 = cv2.cvtColor(res, cv2.COLOR_BGR2HSV)
+    # res1_rz = cv2.resize(res1, (960,540))
+    # cv2.imshow("res1_rz", res1_rz)
+    #
+    # lower_color = np.array([135,0,0])
+    # upper_color = np.array([179,255,255])
+    #
+    # mask1 = cv2.inRange(res1, lower_color, upper_color)
+    # res2 = cv2.bitwise_and(res1, res1, mask=mask1)
+    # res2_rz = cv2.resize(res2, (960,540))
+    # cv2.imshow("res2_rz", res2_rz)
+    #
+    # opening2 = cv2.morphologyEx(res2, cv2.MORPH_OPEN, kernel1)
+    # opening2_rz = cv2.resize(opening2, (960, 540))
+    # cv2.imshow('opening2_rz', opening2_rz)
+    #
+    # res3 = cv2.cvtColor(opening2, cv2.COLOR_BGR2GRAY)
+    # res3_rz = cv2.resize(res3, (960,540))
+    # cv2.imshow("res3_rz", res3_rz)
 
-    ##    _,contours,_ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    ##    cv2.drawContours(next, contours, -1, (200,0,20), 1)
+    _,contours,_ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(next, contours, -1, (200,0,20), 1)
 
-    ##
-    ##    M = [0,0]
-    ##    n = 0
-    ##    for cnt in contours:
-    ##        x,y,w,h = cv2.boundingRect(cnt)
-    ##        if w>1 and h>1 and w<200 and h<200:
-    ##            M[0] += x + float(w)/2.
-    ##            M[1] += y + float(h)/2.
-    ##            n += 1
-    ##
-    ##    if M[0]!=0 and M[0]!=0:
-    ##        M = np.array(M)
-    ##        NewCen = PrevCen + 0.9*(M-PrevCen)
-    ##        cntX = int(NewCen[0]/n)
-    ##        cntY = int(NewCen[1]/n)
-    ##        cv2.circle(next,(cntX,cntY),5,(130,50,200),-1)
-    ##        cv2.putText(next,str(cntX)+','+str(cntY), (cntX+10,cntY+10),font,1,(130,50,200))
-    ##        PrevCen = NewCen
-    ##
-    ##    prevG = nextG
 
-    ##    nextrz = cv2.resize(next, (960,540))
-    ##    cv2.imshow('nextrz',nextrz)
+    M = [0,0]
+    n = 0
+    for cnt in contours:
+        x,y,w,h = cv2.boundingRect(cnt)
+        if w>1 and h>1 and w<200 and h<200:
+            M[0] += x + float(w)/2.
+            M[1] += y + float(h)/2.
+            n += 1
+
+    if M[0]!=0 and M[0]!=0:
+        M = np.array(M)
+        NewCen = PrevCen + 0.9*(M-PrevCen)
+        cntX = int(NewCen[0]/n)
+        cntY = int(NewCen[1]/n)
+        cv2.circle(next,(cntX,cntY),5,(130,50,200),-1)
+        cv2.putText(next,str(cntX)+','+str(cntY), (cntX+10,cntY+10),font,1,(130,50,200))
+        PrevCen = NewCen
+
+    prevG = nextG
+
+    nextrz = cv2.resize(next, (960,540))
+    cv2.imshow('nextrz',nextrz)
 
 
     k = cv2.waitKey(1) & 0xFF
