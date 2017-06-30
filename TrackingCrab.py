@@ -1,7 +1,10 @@
 import cv2
 import numpy as np
 
-cap = cv2.VideoCapture("C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016.mp4")
+pathW = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
+pathM = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
+
+cap = cv2.VideoCapture(pathM)
 
 _, prev = cap.read()
 
