@@ -2,6 +2,10 @@ import cv2
 import numpy as np
 import csv
 
+pathW = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
+pathM = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
+
+
 resultFile = open("burrows.csv", "w")
 wr = csv.writer(resultFile, delimiter=",")
 
@@ -26,7 +30,7 @@ def click(event, x, y, flags, param):
     if event == cv2.EVENT_MOUSEMOVE:
         pos = (x, y)
 
-cap = cv2.VideoCapture("C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4")
+cap = cv2.VideoCapture(pathM)
 
 while(cap.isOpened()):
 
