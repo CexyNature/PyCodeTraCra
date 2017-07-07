@@ -5,7 +5,7 @@ import dlib
 
 win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
 mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
-vid = cv2.VideoCapture(win)
+vid = cv2.VideoCapture(mac)
 
 _, prev = vid.read()
 

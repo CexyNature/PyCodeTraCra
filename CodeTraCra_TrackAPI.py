@@ -11,7 +11,7 @@ mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
 tracker = cv2.Tracker_create('MIL')
 
 # Read video
-vid = cv2.VideoCapture(win)
+vid = cv2.VideoCapture(mac)
 
 # Exit if video not opened.
 if not vid.isOpened():

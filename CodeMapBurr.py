@@ -6,7 +6,7 @@ win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
 mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
 
 #Create file where burrows coordinates will be saved
-resultFile = open("burrows.csv", "w")
+resultFile = open("burrows.csv", "w", newline='\n')
 wr = csv.writer(resultFile, delimiter=",")
 
 #Initialize list of clicks coordinates, burrows counter, position burrow, and position mouse
@@ -17,19 +17,20 @@ posmouse = (0,0)
 
 #Define mouse click function
 def click(event, x, y, flags, param):
-    global burrows, position, posmouse
+    global burrows, position, posmouse, resultFile
 
     if event == cv2.EVENT_LBUTTONDOWN:
         position = (x, y)
         burrows.append(position)
         wr.writerow(position)
+        resultFile.flush()
         print(burrows)
 
     if event == cv2.EVENT_MOUSEMOVE:
         posmouse = (x, y)
 
 #Initialize capture of video
-vid = cv2.VideoCapture(win)
+vid = cv2.VideoCapture(mac)
 
 while(vid.isOpened()):
 
@@ -53,6 +54,7 @@ while(vid.isOpened()):
     if key == ord("q"):
         print("Q - key pressed. Window quit by user")
         break
+
 
 # Close all open windows
 vid.release()

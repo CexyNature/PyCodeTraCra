@@ -6,7 +6,7 @@ mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
 print('Select 3 crabs using the bounding box, and press enter or space after each selection')
 
 cv2.namedWindow("tracking")
-vid = cv2.VideoCapture(win)
+vid = cv2.VideoCapture(mac)
 tracker = cv2.MultiTracker('MIL')
 init_once = False
 
