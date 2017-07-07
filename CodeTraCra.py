@@ -3,14 +3,14 @@ import numpy as np
 import csv
 import dlib
 
-pathW = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
-pathM = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
-cap = cv2.VideoCapture(pathM)
+win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
+mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
+vid = cv2.VideoCapture(win)
 
-_, prev = cap.read()
+_, prev = vid.read()
 
-Frames = cap.get(7)
-print('Frames='+str(Frames))
+Frames = vid.get(7)
+print('Total number of frames = '+str(Frames))
 
 frame_counter=1
 
@@ -34,10 +34,10 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 fgbg2 = cv2.createBackgroundSubtractorKNN()
 
 while(1):
-    ret, next = cap.read()
+    ret, next = vid.read()
 
     outputFrameIndices.append(frame_counter)
-    print("Number of frames: " + str(len(outputFrameIndices)))
+    print("Frame number: " + str(len(outputFrameIndices)))
 
     frame = cv2.bitwise_and(next, mask)
 
@@ -87,6 +87,6 @@ while(1):
     if k == 27:
         break
 
-cap.release()
+vid.release()
 cv2.destroyAllWindows()
 resultFile.close()

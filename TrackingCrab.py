@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
 
-pathW = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
-pathM = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
+win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
+mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
 
-cap = cv2.VideoCapture(pathM)
+vid = cv2.VideoCapture(win)
 
-_, prev = cap.read()
+_, prev = vid.read()
 
 # Coordinates polygon for mask
 pts = np.array([[0, 0], [0, 510], [710, 0]], np.int32)
@@ -34,13 +34,13 @@ PrevCen = np.array([10, 10])
 kernel1 = np.ones((4, 4), np.uint8)
 
 while True:
-    _, next = cap.read()
+    _, frame = vid.read()
 
-    masked_image = cv2.bitwise_and(next, mask)
+    masked_image = cv2.bitwise_and(frame, mask)
     masked_image_rz = cv2.resize(masked_image, (960, 540))
     cv2.imshow('image_masked_rz', masked_image_rz)
 
-    ##    mask2 = cv2.fillPoly(next, [pts], (0,0,0))
+    ##    mask2 = cv2.fillPoly(frame, [pts], (0,0,0))
     ##    mask2_rz = cv2.resize(mask2, (960,540))
     ##    cv2.imshow('mask2_rz', mask2_rz)
 
@@ -103,7 +103,7 @@ while True:
     # cv2.imshow("res3_rz", res3_rz)
 
     _,contours,_ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cv2.drawContours(next, contours, -1, (200,0,20), 1)
+    cv2.drawContours(frame, contours, -1, (200,0,20), 1)
 
 
     M = [0,0]
@@ -120,18 +120,20 @@ while True:
         NewCen = PrevCen + 0.9*(M-PrevCen)
         cntX = int(NewCen[0]/n)
         cntY = int(NewCen[1]/n)
-        cv2.circle(next,(cntX,cntY),5,(130,50,200),-1)
-        cv2.putText(next,str(cntX)+','+str(cntY), (cntX+10,cntY+10),font,1,(130,50,200))
+        cv2.circle(frame,(cntX,cntY),5,(130,50,200),-1)
+        cv2.putText(frame,str(cntX)+','+str(cntY), (cntX+10,cntY+10),font,1,(130,50,200))
         PrevCen = NewCen
 
     prevG = nextG
 
-    nextrz = cv2.resize(next, (960,540))
+    nextrz = cv2.resize(frame, (960,540))
     cv2.imshow('nextrz',nextrz)
 
 
-    k = cv2.waitKey(1) & 0xFF
-    if k == 27: break
+    key = cv2.waitKey(1) & 0xFF
+    if key == 27:
+        print("ESC - key pressed. Window quit by user")
+        break
 
 cap.release()
 cv2.destroyAllWindows()

@@ -4,12 +4,12 @@
 import numpy as np
 import cv2
 
-pathW = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
-pathM = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
+win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
+mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
 
-cap = cv2.VideoCapture(pathM)
+vid = cv2.VideoCapture(win)
 
-_, prev = cap.read()
+_, prev = vid.read()
 
 # Creating mask
 mask = np.zeros(prev.shape, dtype=np.uint8)
@@ -42,7 +42,7 @@ cv2.normalize(roi_hist,roi_hist,0,255,cv2.NORM_MINMAX)
 term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
 
 while(1):
-    ret ,next = cap.read()
+    ret ,next = vid.read()
     if ret == True:
 
         frame = cv2.bitwise_and(next, mask)
@@ -88,5 +88,5 @@ while(1):
     else:
         break
 
+vid.release()
 cv2.destroyAllWindows()
-cap.release()
