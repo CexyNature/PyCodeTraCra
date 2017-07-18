@@ -1,12 +1,26 @@
 import cv2
 import numpy as np
+import csv
 
 win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
 mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
 
-vid = cv2.VideoCapture(win)
+vid = cv2.VideoCapture(mac)
 
 _, prev = vid.read()
+
+Frames = vid.get(7)
+print('Total number of frames = ' + str(Frames))
+
+# Initialize lists for frame counter
+frame_counter = 1
+outputFrameIndices = []
+
+# Create file to print results
+resultFile = open('cnt_01.csv', 'w', newline = '\n')
+wr = csv.writer(resultFile, delimiter = ",")
+wr.writerow(['Total number of frames = ' + str(Frames)])
+wr.writerow(['Frame', 'Contour list', 'Coord x', 'Coord y'])
 
 # Coordinates polygon for mask
 pts = np.array([[0, 0], [0, 510], [710, 0]], np.int32)
@@ -14,8 +28,8 @@ pts = np.array([[0, 0], [0, 510], [710, 0]], np.int32)
 pts = pts.reshape((-1, 1, 2))
 
 # Creating mask
-mask = np.zeros(prev.shape, dtype=np.uint8)
-roi_corners = np.array([[(300, 360), (300, 600), (910, 600), (910, 100), (510,100), (300, 360)]], dtype=np.int32)
+mask = np.zeros(prev.shape, dtype = np.uint8)
+roi_corners = np.array([[(300, 360), (300, 600), (910, 600), (910, 100), (510,100), (300, 360)]], dtype = np.int32)
 # fill the ROI so it doesn't get wiped out when the mask is applied
 channel_count = prev.shape[2]
 ignore_mask_color = (255,) * channel_count
@@ -31,25 +45,28 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 PrevCen = np.array([10, 10])
 
 # Creating second kernel for dilation
-kernel1 = np.ones((4, 4), np.uint8)
+kernel1 = np.ones((2, 2), np.uint8)
 
 while True:
     _, frame = vid.read()
 
+    outputFrameIndices.append(frame_counter)
+    print("Frame number: " + str(len(outputFrameIndices)))
+
     masked_image = cv2.bitwise_and(frame, mask)
     masked_image_rz = cv2.resize(masked_image, (960, 540))
-    cv2.imshow('image_masked_rz', masked_image_rz)
+    # cv2.imshow('image_masked_rz', masked_image_rz)
 
     ##    mask2 = cv2.fillPoly(frame, [pts], (0,0,0))
     ##    mask2_rz = cv2.resize(mask2, (960,540))
     ##    cv2.imshow('mask2_rz', mask2_rz)
 
 
-    cv2.accumulateWeighted(masked_image, avg, 0.001)
+    cv2.accumulateWeighted(masked_image, avg, 0.0089)
     averun = cv2.convertScaleAbs(avg)
     averunG = cv2.cvtColor(averun, cv2.COLOR_BGR2GRAY)
     averunG_rz = cv2.resize(averunG, (960, 540))
-    ##    cv2.imshow('averunG_rz', averunG_rz)
+    # cv2.imshow('averunG_rz', averunG_rz)
 
     nextG = cv2.cvtColor(masked_image, cv2.COLOR_BGR2GRAY)
     nextG_rz = cv2.resize(nextG, (960, 540))
@@ -57,14 +74,13 @@ while True:
 
     flow = np.array(abs(np.array(nextG, np.float32) - np.array(averunG, np.float32)), np.uint8)
     flow_rz = cv2.resize(flow, (960, 540))
-    ##    cv2.imshow('flow_rz', flow_rz)
-
+    # cv2.imshow('flow_rz', flow_rz)
 
     lower = 50
     upper = 255
     rang = cv2.inRange(flow, lower, upper)
     rang_rz = cv2.resize(rang, (960, 540))
-    ##    cv2.imshow('rang_rz', rang_rz)
+    # cv2.imshow('rang_rz', rang_rz)
 
     opening = cv2.morphologyEx(rang, cv2.MORPH_OPEN, kernel)
     opening_rz = cv2.resize(opening, (960, 540))
@@ -75,8 +91,9 @@ while True:
     # cv2.imshow('closing_rz', closing_rz)
 
     dilation = cv2.dilate(closing, kernel1, iterations=5)
+    # dilation = cv2.dilate(closing, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2)), iterations=5)
     dilation_rz = cv2.resize(dilation, (960, 540))
-    # cv2.imshow('dilation_rz', dilation_rz)
+    cv2.imshow('dilation_rz', dilation_rz)
 
     # res = cv2.bitwise_and(masked_image, masked_image, mask=dilation)
     # res_rz = cv2.resize(res, (960, 540))
@@ -102,27 +119,40 @@ while True:
     # res3_rz = cv2.resize(res3, (960,540))
     # cv2.imshow("res3_rz", res3_rz)
 
-    _,contours,_ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cv2.drawContours(frame, contours, -1, (200,0,20), 1)
+    _, contours, _ = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-
-    M = [0,0]
-    n = 0
     for cnt in contours:
-        x,y,w,h = cv2.boundingRect(cnt)
-        if w>1 and h>1 and w<200 and h<200:
-            M[0] += x + float(w)/2.
-            M[1] += y + float(h)/2.
-            n += 1
+        x, y, w, h = cv2.boundingRect(cnt)
 
-    if M[0]!=0 and M[0]!=0:
-        M = np.array(M)
-        NewCen = PrevCen + 0.9*(M-PrevCen)
-        cntX = int(NewCen[0]/n)
-        cntY = int(NewCen[1]/n)
-        cv2.circle(frame,(cntX,cntY),5,(130,50,200),-1)
-        cv2.putText(frame,str(cntX)+','+str(cntY), (cntX+10,cntY+10),font,1,(130,50,200))
-        PrevCen = NewCen
+        if cv2.contourArea(cnt) > 35:
+        # if w > 5 and h > 5 and w < 50 and h < 50:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
+            center = cv2.circle(frame, (int(x + w / 2), int(y + h / 2)), 1, (0, 0, 255), -1)
+            cx = int(x + w / 2)
+            cy = int(y + h / 2)
+
+            wr.writerow([(str(len(outputFrameIndices))), cnt, cx, cy])
+    # _,contours,_ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # cv2.drawContours(frame, contours, -1, (200,0,20), 1)
+    #
+    #
+    # M = [0,0]
+    # n = 0
+    # for cnt in contours:
+    #     x,y,w,h = cv2.boundingRect(cnt)
+    #     if w>1 and h>1 and w<200 and h<200:
+    #         M[0] += x + float(w)/2.
+    #         M[1] += y + float(h)/2.
+    #         n += 1
+    #
+    # if M[0]!=0 and M[0]!=0:
+    #     M = np.array(M)
+    #     NewCen = PrevCen + 0.9*(M-PrevCen)
+    #     cntX = int(NewCen[0]/n)
+    #     cntY = int(NewCen[1]/n)
+    #     cv2.circle(frame,(cntX,cntY),5,(130,50,200),-1)
+    #     cv2.putText(frame,str(cntX)+','+str(cntY), (cntX+10,cntY+10),font,1,(130,50,200))
+    #     PrevCen = NewCen
 
     prevG = nextG
 
@@ -135,5 +165,6 @@ while True:
         print("ESC - key pressed. Window quit by user")
         break
 
-cap.release()
+vid.release()
 cv2.destroyAllWindows()
+resultFile.close()

@@ -1,8 +1,18 @@
 import cv2
 import sys
+import csv
+from datetime import datetime
+
+startTime = datetime.now()
 
 win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
 mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
+mac2 = '/Users/Cesar/PyCode_MacOSv1/VIRB0006.MP4'
+
+resultFile = open("Tracking.csv", "w", newline='\n')
+wr = csv.writer(resultFile, delimiter=",")
+wr.writerow(['Coord x','Coord y'])
+position = (0,0)
 
 # Set up tracker.
 # Instead of MIL, you can also use
@@ -43,7 +53,9 @@ while True:
 
     # Update tracker
     ok, bbox = tracker.update(frame)
-
+    print(position)
+    position = (bbox[0],bbox[1])
+    wr.writerow(position)
     # Draw bounding box
     if ok:
         p1 = (int(bbox[0]), int(bbox[1]))
@@ -59,3 +71,4 @@ while True:
         break
 vid.release()
 cv2.destroyAllWindows()
+print(datetime.now() - startTime)
