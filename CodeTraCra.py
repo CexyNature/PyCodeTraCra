@@ -4,6 +4,7 @@ import csv
 
 win = 'C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4'
 mac = '/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4'
+mac2 = '/Users/Cesar/PyCode_MacOSv1/VIRB0006.MP4'
 
 vid = cv2.VideoCapture(mac)
 _, prev = vid.read()
@@ -30,8 +31,12 @@ ignore_mask_color = (255, ) * channel_count
 cv2.fillPoly(mask, roi_corners, ignore_mask_color)
 
 # Initialize background-subtractor
-fgbg = cv2.createBackgroundSubtractorMOG2(history = 500, varThreshold = 30, detectShadows = False)
-fgbg2 = cv2.createBackgroundSubtractorKNN()
+
+#
+# fgbg = cv2.createBackgroundSubtractorMOG2(history = 500, varThreshold = 30, detectShadows = False)
+fgbg = cv2.createBackgroundSubtractorMOG2()
+
+# fgbg2 = cv2.createBackgroundSubtractorKNN()
 
 while(vid.isOpened()):
     ret, next = vid.read()
@@ -47,27 +52,31 @@ while(vid.isOpened()):
         bit_fil = cv2.bilateralFilter(frame, 5, 75, 75)
         # bit_fil = cv2.cvtColor(bit_fil, cv2.COLOR_BGR2GRAY)
 
-        # fgmask = fgbg.apply(bit_fil)
-        fgmask = fgbg.apply(bit_fil, learningRate = 0.001)
+        #
+        fgmask = fgbg.apply(bit_fil)
+        # fgmask = fgbg.apply(bit_fil, learningRate = 0.001)
         # fgmask2 = fgbg2.apply(bit_fil)
 
         # fgmask_f = fgbg.apply(frame)
         # fgmask2_f = fgbg2.apply(frame)
 
         mask_blur = cv2.GaussianBlur(fgmask, (3, 3), sigmaX=5, sigmaY=1)
-        mask_blur = cv2.resize(mask_blur, (720, 405))
-        # cv2.imshow("mask_blur", mask_blur)
+        # mask_blur = cv2.resize(mask_blur, (720, 405))
+        cv2.imshow("mask_blur", mask_blur)
 
         # res = cv2.dilate(mask_blur, cv2.getStructuringElement (cv2.MORPH_ELLIPSE, (1, 1)), iterations = 1)
-        # res = cv2.erode(fgmask, (5, 5), iterations = 3)
+        res = cv2.erode(mask_blur, (7, 7), iterations = 1)
+        # res = cv2.erode(fgmask, (3, 3), iterations = 1)
+        # res = cv2.erode(res, (3,3), iterations = 3)
         # cv2.imshow('res', res)
 
-        _, contours, _ = cv2.findContours(mask_blur, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # _, contours, _ = cv2.findContours(mask_blur, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        _, contours, _ = cv2.findContours(res, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         for cnt in contours:
             x, y, w, h = cv2.boundingRect(cnt)
 
-            if w > 10 and h > 10 and w < 50 and h < 50:
+            if w > 5 and h > 5 and w < 80 and h < 80:
                 cv2.rectangle(next, (x, y), (x+w, y+h), (0, 255, 0), 1)
                 center = cv2.circle(next, (int(x+w/2), int(y+h/2)), 1, (0, 0, 255), -1)
                 cx = int(x+w/2)
@@ -88,12 +97,15 @@ while(vid.isOpened()):
         # cv2.imshow("MOG2_f", fgmask2_f)
         # cv2.imshow("MOG_f", fgmask_f)
 
-        # cv2.imshow('next', next)
+
+
+        cv2.imshow('next', next)
 
         k = cv2.waitKey(30) & 0xff
         if k == 27:
             break
     else:
+        print('Issue opening video')
         break
 
 vid.release()

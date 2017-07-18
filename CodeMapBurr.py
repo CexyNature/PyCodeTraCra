@@ -34,7 +34,7 @@ def click(event, x, y, flags, param):
         posmouse = (x, y)
 
 #Initialize capture of video
-vid = cv2.VideoCapture(mac)
+vid = cv2.VideoCapture(mac2)
 fps = vid.get(5)
 print(fps)
 
@@ -59,7 +59,7 @@ while(vid.isOpened()):
         cv2.putText(frame, "Mouse position {}".format(posmouse), (50, 710), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
 
-        # cv2.imshow('frame', frame)
+        cv2.imshow('frame', frame)
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):
