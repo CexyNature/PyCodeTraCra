@@ -1,7 +1,6 @@
 import cv2
 import argparse
 
-
 ap = argparse.ArgumentParser()
 ap.add_argument('-v', '--video', required = True, help = 'path to the video')
 ap.add_argument('-s', '--skip_frames', required = True, help = 'number of frames to skip')
@@ -15,12 +14,14 @@ print('Total number of frames = ' + str(length))
 def onChange(trackbarValue):
     vid.set(1, trackbarValue)
     ret, frame = vid.read()
+    frame = cv2.resize(frame, (960, 580))
     cv2.imshow('Analyse interval', frame)
     pass
 
 cv2.namedWindow('Analyse interval')
+cv2.resizeWindow('Analyse interval', 960, 580)
 cv2.createTrackbar('start', 'Analyse interval', 0, length, onChange )
-cv2.createTrackbar('end', 'Analyse interval', 240, length, onChange )
+cv2.createTrackbar('end', 'Analyse interval', int(vid.get(7)), length, onChange )
 
 onChange = 0
 cv2.waitKey()
@@ -41,7 +42,8 @@ counter = []
 counter1 = []
 print('Analysis started at frame ' + str(index_first_frame))
 
-video1 = cv2.VideoWriter(filename='video1.avi', fourcc=1, frameSize=(960,580), fps=24)
+# fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+# video1 = cv2.VideoWriter(filename='video1.mp4', fourcc=fourcc, frameSize=(960, 580), fps=24, isColor=False)
 
 while(vid.isOpened()):
     ret = vid.grab()
@@ -55,7 +57,7 @@ while(vid.isOpened()):
             # frame = fgbg.apply(frame)
             frame = cv2.resize(frame, (960,580))
             cv2.imshow('frame', frame)
-            video1.write(frame)
+            # video1.write(frame)
             counter1.append(counter_unit)
             # print(vid.get(1))
 
@@ -72,5 +74,5 @@ while(vid.isOpened()):
 print('Total frames in interval = ' + str(len(counter)))
 print('Total frames analysed = ' + str(len(counter1)))
 vid.release()
-video1.release()
+# video1.release()
 cv2.destroyAllWindows()
