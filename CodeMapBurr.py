@@ -34,7 +34,7 @@ def click(event, x, y, flags, param):
         posmouse = (x, y)
 
 #Initialize capture of video
-vid = cv2.VideoCapture(mac2)
+vid = cv2.VideoCapture(win)
 fps = vid.get(5)
 print(fps)
 

@@ -6,7 +6,7 @@ win = 'C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4'
 mac = '/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4'
 mac2 = '/Users/Cesar/PyCode_MacOSv1/VIRB0006.MP4'
 
-vid = cv2.VideoCapture(mac)
+vid = cv2.VideoCapture(win)
 _, prev = vid.read()
 
 Frames = vid.get(7)

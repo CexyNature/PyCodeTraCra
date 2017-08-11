@@ -28,7 +28,7 @@ ignore_mask_color = (255,) * channel_count
 cv2.fillPoly(mask, roi_corners, ignore_mask_color)
 
 fgbg = cv2.createBackgroundSubtractorMOG2()
-fgbg2 = cv2.createBackgroundSubtractorKNN()
+fgbg2 = cv2.createBackgroundSubtractorKNN()q
 
 while(1):
     ret, next = cap.read()

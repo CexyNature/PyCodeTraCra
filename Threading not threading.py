@@ -7,10 +7,11 @@ import cv2
 #Path to video file
 win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
 mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
+win2 = 'C:/Users/jc306494/Documents/2CAHA_JCU PhD/1CAHA_Data/Crabs/13JUL2017/DCIM/100_VIRB/VIRB0006.MP4'
 mac2 = '/Users/Cesar/PyCode_MacOSv1/VIRB0006.MP4'
 
 # open a pointer to the video stream and start the FPS timer
-stream = cv2.VideoCapture(mac2)
+stream = cv2.VideoCapture(win2)
 fps = FPS().start()
 
 # loop over frames from the video file stream

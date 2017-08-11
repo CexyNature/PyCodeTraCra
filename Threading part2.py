@@ -9,12 +9,13 @@ import cv2
 # Path to video file
 win = "C:/Users/jc306494/Documents/PythonAnalysis/SampleVid/GP010016_fast.mp4"
 mac = "/Users/Cesar/PyCode_MacOSv1/GP010016_fast.mp4"
+win2 = 'C:/Users/jc306494/Documents/2CAHA_JCU PhD/1CAHA_Data/Crabs/13JUL2017/DCIM/100_VIRB/VIRB0006.MP4'
 mac2 = '/Users/Cesar/PyCode_MacOSv1/VIRB0006.MP4'
 
 # start the file video stream thread and allow the buffer to
 # start to fill
 print("[INFO] starting video file thread...")
-fvs = FileVideoStream(mac2).start()
+fvs = FileVideoStream(win2).start()
 time.sleep(1.0)
 
 # start the FPS timer
