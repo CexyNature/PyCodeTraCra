@@ -22,7 +22,7 @@ def selectcrop(event, x, y, flags, param):
         coordROI.append((x,y))
         crop = False
 
-        cv2.rectangle(frame, coordROI[0], coordROI[1], (0,250,255), 3)
+        cv2.rectangle(frame, coordROI[0], coordROI[1], (0,250,255), 1)
         cv2.imshow('frame', frame)
 
 ap = argparse.ArgumentParser()
@@ -40,7 +40,7 @@ while True:
     key = cv2.waitKey(1) & 0xFF
 
     #Press r to reset cropping ROI
-    if key == ord('t'):
+    if key == ord('r'):
         coordROI = []
         frame = duplicate.copy()
 
