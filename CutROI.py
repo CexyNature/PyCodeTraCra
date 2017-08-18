@@ -40,7 +40,7 @@ while True:
     key = cv2.waitKey(1) & 0xFF
 
     #Press r to reset cropping ROI
-    if key == ord('r'):
+    if key == ord('t'):
         coordROI = []
         frame = duplicate.copy()
 
